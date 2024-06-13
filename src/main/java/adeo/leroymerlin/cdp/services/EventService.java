@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class EventService {
@@ -47,17 +48,11 @@ public class EventService {
     }
 
     public List<Event> getFilteredEvents(String query) {
-        List<Event> events = eventRepository.findAll();
-        List<Event> filteredEvents = new ArrayList<>();
-        for (Event event : events){
-            for (Band band : event.getBands()){
-                for (Member member : band.getMembers()){
-                    if (member.getName().toLowerCase().contains(query.toLowerCase())){
-                        filteredEvents.add(event);
-                    }
-                }
-            }
-        }
-        return filteredEvents;
+        String lowerCaseQuery = query.toLowerCase();
+        return eventRepository.findAll().stream()
+                .filter(event -> event.getBands().stream()
+                        .anyMatch(band -> band.getMembers().stream()
+                                .anyMatch(member -> member.getName().toLowerCase().contains(lowerCaseQuery))))
+                .collect(Collectors.toList());
     }
 }
