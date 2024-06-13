@@ -42,7 +42,7 @@ public class EventService {
         }
         Event event = optionalEvent.get();
         event.setNbStars(eventToUpdate.getNbStars());
-        event.setComment(event.getComment());
+        event.setComment(eventToUpdate.getComment());
         eventRepository.save(event);
 
     }
